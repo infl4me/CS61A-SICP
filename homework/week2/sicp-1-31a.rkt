@@ -5,7 +5,7 @@
 (define (product term a b)
   (if (> a b)
     1
-    (* a (product term (+ a 1) b))))
+    (* (term a) (product term (+ a 1) b))))
 
 (define (factorial n)
   (product identity 1 n))
