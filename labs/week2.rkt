@@ -17,3 +17,24 @@
 
 (substitute '(she loves you yeah yeah yeah) 'yeah 'maybe) ; (she loves you maybe maybe maybe)
 
+
+; 5. Find the values of the expressions
+
+(define (t f)
+  (lambda (x) (f (f (f x)))) )
+(define (1+ x) (+ x 1))
+
+((t 1+) 0) ; 3
+((t (t 1+)) 0) ; 9
+(((t t) 1+) 0) ; 27
+
+; 7. Write and test the make-tester procedure. Given a word w as argument, make-tester returns a procedure
+; of one argument x that returns true if x is equal to w and false otherwise.
+
+(define (make-tester expected) (lambda (actual) (equal? actual expected)))
+
+((make-tester 'hal) 'hal) ; #t
+((make-tester 'hal) 'cs61a) ; #f
+(define sicp-author-and-astronomer? (make-tester 'gerry))
+(sicp-author-and-astronomer? 'hal) ; #f
+(sicp-author-and-astronomer? 'gerry) ; #t

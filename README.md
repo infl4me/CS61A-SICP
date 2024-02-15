@@ -3,5 +3,5 @@ My solutions to Berkeley's CS61A Structure and Interpretation of Computer Progra
 # Setup
 1. Install Racket
 2. Install `simply-scheme` with `raco pkg install simply-scheme`
-3. Run racket programs with `racket ./homework/week\ 1/squares.rkt`
+3. Run racket programs with `racket ./homework/week1/squares.rkt`
 4. (Optional) Install VSCode [extension](https://github.com/Eugleo/magic-racket), for linting, formatting, etc
