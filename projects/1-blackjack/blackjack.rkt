@@ -113,13 +113,13 @@
 
   (count-hand-aces hand (count-hand hand)))
 
-(define (stop-at-17-strategy hand dealer-up-card)
-  (< (best-total hand) 17))
+(define (stop-at-strategy n)
+  (lambda (hand dealer-up-card) (< (best-total hand) n)))
 
 (define (dealer-sensitive-strategy hand dealer-up-card)
   (let ((dealer-value (card-value dealer-up-card)) (customer-value (best-total hand)))
     (or (and (>= dealer-value 7) (< customer-value 17))
-      (and (<= dealer-value 6) (< customer-value 12)))))
+        (and (<= dealer-value 6) (< customer-value 12)))))
 
 (define (play-n strategy n)
   (define (iter games-to-play games-won)
