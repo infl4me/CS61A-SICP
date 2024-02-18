@@ -113,9 +113,4 @@
 
   (count-hand-aces hand (count-hand hand)))
 
-(best-total '(AD 8S)) ; 19
-(best-total '(AD 8S 5H)) ; 14
-(best-total '(AD AS 9H)) ; 21
-(best-total '(AD AS 9H 6D)) ; 17
-(best-total '(AD AS 9H 6D 10S)) ; 27
-(best-total '(AD AS AH AC)) ; 14
+(provide (all-defined-out))
