@@ -73,12 +73,16 @@
 (define (stop-at-strategy n)
   (lambda (hand dealer-up-card) (< (best-total hand) n)))
 
+(define (suit-strategy suit success-strategy fail-strategy)
+  (lambda (hand dealer-up-card)
+    (let ((hand-by-suit (filter (lambda (card) (equal? (card-suit card) suit)) hand)))
+      (if (> (count hand-by-suit) 0)
+          (success-strategy hand dealer-up-card)
+          (fail-strategy hand dealer-up-card)))))
+
 ; strategy that stops at 17 unless you have a heart in your hand, in which case it stops at 19.
 (define (valentine-strategy hand dealer-up-card)
-(let ((hearts (filter (lambda (card) (equal? (card-suit card) 'H)) hand)))
-    (if (> (count hearts) 0)
-      ((stop-at-strategy 19) hand dealer-up-card)
-      ((stop-at-strategy 17) hand dealer-up-card))))
+  ((suit-strategy 'H (stop-at-strategy 19) (stop-at-strategy 17)) hand dealer-up-card))
 
 (define (dealer-sensitive-strategy hand dealer-up-card)
   (let ((dealer-value (card-value dealer-up-card)) (customer-value (best-total hand)))
