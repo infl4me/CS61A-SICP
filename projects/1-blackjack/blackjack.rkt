@@ -113,4 +113,15 @@
 
   (count-hand-aces hand (count-hand hand)))
 
+(define (stop-at-17-strategy hand dealer-up-card)
+  (< (best-total hand) 17))
+
+(define (play-n strategy n)
+  (define (iter games-to-play games-won)
+    (if (= games-to-play 0)
+        games-won
+        (iter (- games-to-play 1) (+ games-won (twenty-one strategy)))))
+
+  (iter n 0))
+
 (provide (all-defined-out))
