@@ -1,6 +1,6 @@
 #lang simply-scheme
 
-(define (twenty-one strategy)
+(define (blackjack strategy)
   (define (play-dealer customer-hand dealer-hand-so-far rest-of-deck)
     (cond ((> (best-total dealer-hand-so-far) 21) 1)
           ((< (best-total dealer-hand-so-far) 17)
@@ -73,6 +73,13 @@
 (define (stop-at-strategy n)
   (lambda (hand dealer-up-card) (< (best-total hand) n)))
 
+; strategy that stops at 17 unless you have a heart in your hand, in which case it stops at 19.
+(define (valentine-strategy hand dealer-up-card)
+(let ((hearts (filter (lambda (card) (equal? (card-suit card) 'H)) hand)))
+    (if (> (count hearts) 0)
+      ((stop-at-strategy 19) hand dealer-up-card)
+      ((stop-at-strategy 17) hand dealer-up-card))))
+
 (define (dealer-sensitive-strategy hand dealer-up-card)
   (let ((dealer-value (card-value dealer-up-card)) (customer-value (best-total hand)))
     (or (and (>= dealer-value 7) (< customer-value 17))
@@ -82,7 +89,7 @@
   (define (iter games-to-play games-won)
     (if (= games-to-play 0)
         games-won
-        (iter (- games-to-play 1) (+ games-won (twenty-one strategy)))))
+        (iter (- games-to-play 1) (+ games-won (blackjack strategy)))))
 
   (iter n 0))
 
