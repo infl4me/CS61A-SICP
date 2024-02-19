@@ -81,13 +81,28 @@
           (fail-strategy hand dealer-up-card)))))
 
 ; strategy that stops at 17 unless you have a heart in your hand, in which case it stops at 19.
-(define (valentine-strategy hand dealer-up-card)
-  ((suit-strategy 'H (stop-at-strategy 19) (stop-at-strategy 17)) hand dealer-up-card))
+(define valentine-strategy
+  (suit-strategy 'H (stop-at-strategy 19) (stop-at-strategy 17)))
 
 (define (dealer-sensitive-strategy hand dealer-up-card)
   (let ((dealer-value (card-value dealer-up-card)) (customer-value (best-total hand)))
     (or (and (>= dealer-value 7) (< customer-value 17))
         (and (<= dealer-value 6) (< customer-value 12)))))
+
+; Takes three strategies as arguments and produces a
+; strategy as a result, such that the result strategy always decides whether or not to “hit”
+; by consulting the three argument strategies, and going with the majority. That is, the
+; result strategy should return #t if and only if at least two of the three argument strategies
+; do.
+(define (majority-strategy strategy1 strategy2 strategy3)
+  (lambda (hand dealer-up-card)
+    (define (iter count majority-count)
+      (cond ((equal? count 0) (>= majority-count 2))
+            ((equal? count 1) (iter (- count 1) (+ majority-count (if (strategy3 hand dealer-up-card) 1 0))))
+            ((equal? count 2) (iter (- count 1) (+ majority-count (if (strategy2 hand dealer-up-card) 1 0))))
+            ((equal? count 3) (iter (- count 1) (+ majority-count (if (strategy1 hand dealer-up-card) 1 0))))))
+
+    (iter 3 0)))
 
 (define (play-n strategy n)
   (define (iter games-to-play games-won)
