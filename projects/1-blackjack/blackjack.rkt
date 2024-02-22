@@ -104,6 +104,11 @@
 
     (iter 3 0)))
 
+(define (reckless-strategy strategy)
+  (lambda (hand dealer-up-card)
+    (or (or (empty? hand) (empty? (bl hand)))
+        (and (not (strategy hand dealer-up-card)) (strategy (bl hand) dealer-up-card)))))
+
 (define (play-n strategy n)
   (define (iter games-to-play games-won)
     (if (= games-to-play 0)
