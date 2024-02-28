@@ -30,7 +30,7 @@
 (define (make-ordered-deck)
   (define (make-suit s)
     (every (lambda (rank) (word rank s)) '(A 2 3 4 5 6 7 8 9 10 J Q K)) )
-  (se (make-suit 'H) (make-suit 'S) (make-suit 'D) (make-suit 'C)) )
+  (se '("RR" "RR") (make-suit 'H) (make-suit 'S) (make-suit 'D) (make-suit 'C)) )
 
 (define (make-deck)
   (define (shuffle deck size)
@@ -46,6 +46,7 @@
 (define (card-value card)
   (let ((value (bl card)))
     (cond
+      ((equal? 'R value) 11)
       ((equal? 'A value) 11)
       ((equal? 'J value) 10)
       ((equal? 'Q value) 10)
@@ -57,18 +58,35 @@
 
 (define (best-total hand)
   (define (ace? card) (equal? (card-type card) 'A))
+  (define (joker? card) (equal? (card-type card) 'R))
+  (define (simple? card) (and (not (joker? card)) (not (ace? card))))
 
   (define (count-hand h)
-    (define (value c) (if (ace? c) 0 (card-value c)))
     (if (empty? h) 0
-        (+ (value (first h)) (count-hand (bf h)))))
+        (+ (card-value (first h)) (count-hand (bf h)))))
 
-  (define (count-hand-aces hand count)
-    (define (value card cur_count) (if (ace? card) (if (<= cur_count 10) 11 1) 0))
-    (if (empty? hand) count
-        (count-hand-aces (bf hand) (+ count (value (first hand) count)))))
+  (define (add-aces cur-count aces-count jokers-count)
+    (define (add-last-ace cc)
+      (if (<= (+ cc jokers-count) 10) (+ cc 11) (+ cc 1)))
 
-  (count-hand-aces hand (count-hand hand)))
+    (if (= aces-count 0)
+        cur-count
+        (add-last-ace (+ cur-count (- aces-count 1)))
+        ))
+
+  (define (add-jokers cur-count jokers-count)
+    (let ((diff (- 21 cur-count)))
+      (cond
+        ((and (>= diff (* 1 jokers-count)) (<= diff (* 11 jokers-count))) (+ cur-count diff))
+        ((< diff (* 1 jokers-count)) (+ cur-count (* 1 jokers-count)))
+        (else (+ cur-count (* 11 jokers-count))))))
+
+  (let ((jokers (filter (lambda (card) (joker? card)) hand))
+        (aces (filter (lambda (card) (ace? card)) hand))
+        (simple-hand (filter (lambda (card) (simple? card)) hand)))
+    (add-jokers
+     (add-aces (count-hand simple-hand) (count aces) (count jokers))
+     (count jokers))))
 
 (define (stop-at-strategy n)
   (lambda (hand dealer-up-card) (< (best-total hand) n)))
